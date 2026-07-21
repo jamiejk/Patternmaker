@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pattern Maker — Layered SVG Pen Plotter Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Header Navigation -->
+    <header class="app-header">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" width="24" height="24">
+          <polygon points="12 2 2 7 12 12 22 7 12 2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <polygon points="2 17 12 22 22 17" fill="none" stroke="currentColor" stroke-width="2"/>
+          <polygon points="2 12 12 17 22 12" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <h1>Pattern Maker <span class="badge">Plotter SVG</span></h1>
+      </div>
+      <div class="header-actions">
+        <button id="btn-export-svg" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Layered SVG
+        </button>
+        <button id="btn-send-plotter" class="btn btn-accent">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Send to Plotter API
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+      <!-- Left Control Panel -->
+      <aside class="sidebar">
+        <!-- 1. Generator Selection -->
+        <section class="panel-section">
+          <h2>Pattern Generator</h2>
+          <div class="form-group">
+            <label for="generator-select">Algorithm Family</label>
+            <select id="generator-select" class="form-control">
+              <option value="islamic-hankin" selected>Islamic & Andalusian (Hankin Star Method)</option>
+              <option value="japanese-kumiko" disabled>Japanese Kumiko (Coming Soon)</option>
+              <option value="arts-crafts" disabled>Arts & Crafts Tessellation (Coming Soon)</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- 2. Paper & Material Profile -->
+        <section class="panel-section">
+          <h2>Paper & Document Setup</h2>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="paper-preset">Paper Preset</label>
+              <select id="paper-preset" class="form-control">
+                <option value="A4" selected>A4 (210 × 297 mm)</option>
+                <option value="A3">A3 (297 × 420 mm)</option>
+                <option value="A2">A2 (420 × 594 mm)</option>
+                <option value="A5">A5 (148 × 210 mm)</option>
+                <option value="LETTER">US Letter</option>
+                <option value="TABLOID">Tabloid (11 × 17 in)</option>
+                <option value="CUSTOM">Custom Dimensions...</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="paper-orientation">Orientation</label>
+              <select id="paper-orientation" class="form-control">
+                <option value="portrait" selected>Portrait</option>
+                <option value="landscape">Landscape</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="custom-paper-row" class="form-row hidden">
+            <div class="form-group flex-1">
+              <label for="custom-width">Width (mm)</label>
+              <input type="number" id="custom-width" class="form-control" value="200" min="50" max="2000">
+            </div>
+            <div class="form-group flex-1">
+              <label for="custom-height">Height (mm)</label>
+              <input type="number" id="custom-height" class="form-control" value="200" min="50" max="2000">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="paper-margin">Margin (mm): <span id="val-paper-margin">15</span>mm</label>
+            <input type="range" id="paper-margin" min="0" max="50" value="15" step="1">
+          </div>
+        </section>
+
+        <!-- 3. Pen & Material Profile -->
+        <section class="panel-section">
+          <h2>Pen & Nib Profile</h2>
+          <div class="form-group">
+            <label for="pen-preset">Pen Selection</label>
+            <select id="pen-preset" class="form-control">
+              <option value="staedtler-marsmatic-07" selected>Staedtler Marsmatic ISO 0.7mm</option>
+              <option value="staedtler-marsmatic-035">Staedtler Marsmatic ISO 0.35mm</option>
+              <option value="rotring-isograph-05">rOtring Isograph 0.5mm</option>
+              <option value="sakura-pigma-01">Sakura Pigma Micron 0.25mm</option>
+              <option value="custom-pen">Custom Pen Profile...</option>
+            </select>
+          </div>
+          <div id="custom-pen-row" class="form-group hidden">
+            <label for="custom-nib-mm">Nib Diameter (mm)</label>
+            <input type="number" id="custom-nib-mm" class="form-control" value="0.7" step="0.05" min="0.05" max="3">
+          </div>
+        </section>
+
+        <!-- 4. Geometry & Hankin Parameters -->
+        <section class="panel-section">
+          <h2>Tiling & Star Geometry</h2>
+          <div class="form-group">
+            <label for="tiling-type">Grid Tiling Topology</label>
+            <select id="tiling-type" class="form-control">
+              <option value="4.8.8" selected>Octagonal & Square (4.8.8)</option>
+              <option value="4.4">Square Grid (4.4)</option>
+              <option value="6.6.6">Hexagonal Grid (6.6.6)</option>
+              <option value="3.12.12">Dodecagonal & Triangular (3.12.12)</option>
+              <option value="3.6.3.6">Kagome Star Grid (3.6.3.6)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tile-scale">Tile Side Length: <span id="val-tile-scale">40</span> mm</label>
+            <input type="range" id="tile-scale" min="15" max="120" value="40" step="1">
+          </div>
+
+          <div class="form-group">
+            <label for="hankin-delta">Contact Position (&delta;): <span id="val-hankin-delta">50</span>%</label>
+            <input type="range" id="hankin-delta" min="10" max="90" value="50" step="1">
+          </div>
+
+          <div class="form-group">
+            <label for="hankin-angle">Contact Angle (&theta;): <span id="val-hankin-angle">45</span>&deg;</label>
+            <input type="range" id="hankin-angle" min="15" max="75" value="45" step="1">
+          </div>
+        </section>
+
+        <!-- 5. Hatching & Material Shading -->
+        <section class="panel-section">
+          <h2>Pen Hatching & Shading</h2>
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="enable-hatching"> Enable Pen Hatch Fill
+            </label>
+          </div>
+          <div id="hatching-controls" class="hidden">
+            <div class="form-group">
+              <label for="hatch-angle">Hatch Angle: <span id="val-hatch-angle">45</span>&deg;</label>
+              <input type="range" id="hatch-angle" min="0" max="180" value="45" step="5">
+            </div>
+            <div class="info-note">
+              <span>Dynamic Hatch Step: <strong id="val-hatch-step">0.70</strong> mm (scaled to pen nib)</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. Plotter Server Web API Setup -->
+        <section class="panel-section">
+          <h2>Plotter Web API Server</h2>
+          <div class="form-group">
+            <label for="plotter-url">Server API Endpoint</label>
+            <div class="input-with-button">
+              <input type="text" id="plotter-url" class="form-control" value="http://localhost:5000/api/plot">
+              <button id="btn-test-api" class="btn btn-secondary">Test</button>
+            </div>
+          </div>
+          <div id="api-status-badge" class="status-badge">API Endpoint Ready</div>
+        </section>
+      </aside>
+
+      <!-- Center Interactive Viewport -->
+      <section class="viewport-area">
+        <div class="viewport-toolbar">
+          <div class="zoom-controls">
+            <button id="btn-zoom-in" class="btn-icon" title="Zoom In">+</button>
+            <button id="btn-zoom-out" class="btn-icon" title="Zoom Out">-</button>
+            <button id="btn-zoom-reset" class="btn-icon" title="Fit Paper">Fit</button>
+          </div>
+          <div class="viewport-stats">
+            <span id="stat-paper">Paper: A4 (210×297mm)</span>
+            <span class="divider">|</span>
+            <span id="stat-paths">Polylines: 0</span>
+            <span class="divider">|</span>
+            <span id="stat-travel">Pen Lift Distance: 0 mm</span>
+          </div>
+        </div>
+
+        <div id="canvas-container" class="canvas-container">
+          <!-- Interactive SVG rendered dynamically -->
+          <svg id="svg-viewport" xmlns="http://www.w3.org/2000/svg">
+            <g id="viewport-transform">
+              <rect id="svg-paper-sheet" fill="#ffffff" stroke="#90a4ae" stroke-width="0.5"/>
+              <rect id="svg-paper-margin" fill="none" stroke="#e0e0e0" stroke-dasharray="4 4" stroke-width="0.5"/>
+              <g id="svg-layer-root"></g>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Right Layer Manager Sidebar -->
+      <aside class="layer-sidebar">
+        <h2>Pen Plotter Layers</h2>
+        <div id="layer-list" class="layer-list">
+          <!-- Dynamic layer items rendered here -->
+        </div>
+
+        <div class="plotter-summary">
+          <h3>Optimizer Summary</h3>
+          <div class="summary-item">
+            <span>Line Deduplication:</span>
+            <strong class="text-success">Active</strong>
+          </div>
+          <div class="summary-item">
+            <span>Polyline Endpoint Joining:</span>
+            <strong class="text-success">Active</strong>
+          </div>
+          <div class="summary-item">
+            <span>TSP Pen Lift Minimization:</span>
+            <strong class="text-success">Active</strong>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
