@@ -84,11 +84,42 @@ This web application translates those mathematical principles into a lightweight
 
 ---
 
-## Future Roadmap
+## Roadmap & TODO List
 
-- **Japanese Pattern Generator**: Asanoha (hemp leaf), Seigaiha (ocean waves), Shippo (seven treasures), Sayagata (key fret).
-- **Arts & Crafts Pattern Generator**: Interlocking floral repeats, Gothic tracery arches, and Mackintosh geometric curves.
-- **Direct Pen Plotter Control**: Additional direct serial/G-code/Web Serial API dispatch options.
+Below is a detailed list of features remaining to port from `TiledPatternMaker` / Taprats, as well as pen plotter specific enhancements:
+
+### 1. Advanced Tilings & Grid Topologies (Taprats Porting)
+- [ ] **Dual Tilings**: Port dual grid generators (Dual of 4.8.8, Dual of 3.12.12, Dual of 6.6.6).
+- [ ] **Non-Regular & Irregular Tilings**: Pentagonal tilings (Cairo tiling), kite/dart Penrose tilings.
+- [ ] **Custom Tile Symmetry Groups**: Implement $p1, p2, p4, p4m, p6, p6m$ wallpaper groups for custom tile placement.
+- [ ] **Interactive Tile Editor**: Allow custom polygon creation and edge vertex manipulation.
+
+### 2. Hankin Motif & Geometry Variations (Taprats Porting)
+- [ ] **Multi-Contact Point Hankin (Lee's 2-Point Method)**: Support multiple contact points per polygon edge for complex 12-point and 16-point rosettes.
+- [ ] **Asymmetric Contact Angles**: Allow $\theta_1 \neq \theta_2$ for elongated star rays.
+- [ ] **3D Interlacing / Ribbon Over-Under Render Mode**: Generate double-line woven ribbons with under/over gaps for pen plotting.
+- [ ] **Historic Motif Preset Library**: Presets inspired by classic patterns from the Alhambra (Granada), Cordoba Mosque, Samarkand, and Fes.
+- [ ] **Custom Crop Boundaries**: Clip geometric mosaics inside circles, Gothic arches, star shields, or custom SVG paths.
+- [ ] **Border Generators**: Add outer geometric border frames and corner motifs.
+
+### 3. Future Pattern Generator Plugins
+- [ ] **Japanese Generator Module**:
+  - *Asanoha* (hemp leaf)
+  - *Seigaiha* (ocean waves)
+  - *Shippo* (seven treasures)
+  - *Sayagata* (swastika key fret)
+- [ ] **Arts & Crafts Generator Module**:
+  - William Morris inspired interlocking floral/vine curves
+  - Mackintosh geometric grid structures
+  - Gothic tracery arches
+
+### 4. Advanced Pen Plotter Features
+- [ ] **Direct Web Serial API Integration**: Connect directly to GRBL, Marlin, or AxiDraw plotters over USB serial from the browser.
+- [ ] **G-code & HP-GL Exporter**: Alternative vector exporter for CNC/HP-GL plotters.
+- [ ] **Multi-Pen Plot Simulator**: Animated stroke order preview showing pen motion and pen-up travel paths before plotting.
+- [ ] **Pen Nib Offset / Double Outline Path Expansion**: Automatically offset paths by pen nib radius for thick markers and brushes.
+
+---
 
 ## License
 
